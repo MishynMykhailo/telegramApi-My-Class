@@ -84,12 +84,13 @@ class TelegramBot {
   }
   // BUTTONS LOGICS
 
-  inlineKeyboard(buttons = [{ text, callback_data }]) {
+  inlineKeyboard(buttons = [{ text, callback_data, url }]) {
     const replyMarkup = {
       inline_keyboard: [[...buttons]],
     };
     return replyMarkup;
   }
+
   replyKeyboardMarkup(buttons = [{ text, callback_data }]) {
     const replyMarkup = {
       keyboard: [[...buttons]],
@@ -122,6 +123,10 @@ class TelegramBot {
   action(text, handler) {
     this.callbackHandlers[text] = this.wrapperHandler(handler);
   }
+  // Hears for command wtih "/"
+  hears(command, handler) {
+    this.commandHandlers[command] = this.wrapperHandler(handler);
+  }
 
   // add comfortable logics for answer for question
   wrapperHandler = (handler) => async (message) => {
@@ -136,7 +141,13 @@ class TelegramBot {
   // END BUTTON LOGICS
 
   // TELEGRAM methods
-
+  // setMyCommands
+  async setMyCommands(commands = [{ command, description }]) {
+    const commandsArray = {
+      commands,
+    };
+    await this.request().post("setMyCommands", commandsArray);
+  }
   // sendMessage
   async sendMessage(chat_id, text, params = {}) {
     console.log(params);
@@ -150,10 +161,6 @@ class TelegramBot {
     } catch (error) {
       console.error("Error sending message:", error.message);
     }
-  }
-  // Hears for command wtih "/"
-  hears(command, handler) {
-    this.commandHandlers[command] = this.wrapperHandler(handler);
   }
 
   //  telegram methods END
