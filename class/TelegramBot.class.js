@@ -90,8 +90,16 @@ class TelegramBot {
     };
     return replyMarkup;
   }
-  ReplyKeyboardMarkup() {
-    return {};
+  replyKeyboardMarkup(buttons = [{ text, callback_data }]) {
+    const replyMarkup = {
+      keyboard: [[...buttons]],
+      resize_keyboard: function () {
+        this.resize_keyboard = true;
+        return this;
+      },
+    };
+
+    return replyMarkup;
   }
   // This method need for inline btns, that off active status on btn;
   async answerCallbackQuery(callbackQueryId) {
@@ -112,14 +120,26 @@ class TelegramBot {
   // });
 
   action(text, handler) {
-    this.callbackHandlers[text] = handler;
+    this.callbackHandlers[text] = this.wrapperHandler(handler);
   }
+
+  // add comfortable logics for answer for question
+  wrapperHandler = (handler) => async (message) => {
+    const context = {
+      message,
+      reply: async (text, params = {}) => {
+        await this.sendMessage(message.chat.id, text, params);
+      },
+    };
+    await handler(context);
+  };
   // END BUTTON LOGICS
 
   // TELEGRAM methods
 
   // sendMessage
   async sendMessage(chat_id, text, params = {}) {
+    console.log(params);
     try {
       const response = await this.request().post("sendMessage", {
         chat_id,
@@ -133,7 +153,7 @@ class TelegramBot {
   }
   // Hears for command wtih "/"
   hears(command, handler) {
-    this.commandHandlers[command] = handler;
+    this.commandHandlers[command] = this.wrapperHandler(handler);
   }
 
   //  telegram methods END
