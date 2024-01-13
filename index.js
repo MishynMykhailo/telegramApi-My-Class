@@ -10,7 +10,7 @@ bot.setMyCommands([
 bot.hears("start", (context) => {
   
   context.reply("__hello__", {
-    reply_markup: bot.inlineKeyboard([
+    reply_markup: bot.keyboardService.inlineKeyboard([
       { text: "поздороваться", callback_data: "hi" },
       { text: "попрощаться", callback_data: "bb" },
     ]),
