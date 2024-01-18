@@ -19,6 +19,7 @@ bot.hears("start", (context) => {
  
 });
 bot.action("hi", (context) => {
+  console.log(context);
   context.reply("Hello,I'm Alfredo");
 });
 bot.action("bb", (context) => {
